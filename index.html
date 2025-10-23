@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Greenleaf Trees — E‑Shop</title>
+    <style>
+        :root{
+            --green:#0b6b3a; --muted:#6b7280; --bg:#f6f7f9; --card:#ffffff;
+            --glass: rgba(255,255,255,0.6);
+            --shadow: 0 6px 20px rgba(17,24,39,0.08);
+            --accent: #107e46;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:#0f172a;line-height:1.4}
+        header{
+            display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(90deg,#fff 0 60%, rgba(16,126,70,0.02));
+            position:sticky;top:0;z-index:40;border-bottom:1px solid #eef2f6;
+        }
+        .brand{display:flex;gap:12px;align-items:center}
+        .logo{
+            width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--green),#13a06b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;box-shadow:0 6px 18px rgba(16,126,70,0.12)
+        }
+        h1{font-size:18px;margin:0}
+        nav{display:flex;gap:14px;align-items:center}
+        button.icon{
+            background:transparent;border:1px solid rgba(15,23,42,0.06);padding:8px 12px;border-radius:10px;cursor:pointer;color:var(--green);display:flex;gap:8px;align-items:center
+        }
+        main{max-width:1200px;margin:28px auto;padding:0 20px;display:grid;grid-template-columns:1fr 340px;gap:28px}
+        .catalog{
+            display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;
+        }
+        .card{
+            background:var(--card);border-radius:14px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;
+        }
+        .thumb{height:160px;border-radius:10px;background-size:cover;background-position:center}
+        .meta{display:flex;justify-content:space-between;align-items:center}
+        .price{font-weight:700;color:var(--green)}
+        .badge{font-size:12px;padding:6px 8px;background:linear-gradient(90deg, #e6fbf0, #eafdf6);color:#056c37;border-radius:999px}
+        .desc{color:var(--muted);font-size:14px}
+        .actions{display:flex;gap:8px;margin-top:auto}
+        .btn{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;border:0;cursor:pointer}
+        .btn.secondary{background:#fff;color:var(--green);border:1px solid rgba(16,126,70,0.12)}
+        aside.cart{
+            position:relative;background:linear-gradient(180deg,#fff,var(--glass));border-radius:14px;padding:18px;box-shadow:var(--shadow);
+            height:fit-content;min-height:400px;
+        }
+        .cart h2{margin:0 0 10px 0}
+        .cart-list{display:flex;flex-direction:column;gap:12px;max-height:320px;overflow:auto;padding-right:6px}
+        .cart-item{display:flex;gap:12px;align-items:center}
+        .ci-thumb{width:64px;height:64px;border-radius:8px;background-size:cover;background-position:center}
+        .qty{display:flex;align-items:center;gap:6px}
+        .muted{color:var(--muted);font-size:13px}
+        .summary{border-top:1px dashed #eef2f6;padding-top:12px;margin-top:12px;display:flex;flex-direction:column;gap:10px}
+        .row{display:flex;justify-content:space-between}
+        footer{max-width:1200px;margin:26px auto;padding:12px 20px;color:var(--muted);font-size:13px}
+        .hero{display:flex;align-items:center;gap:18px;background:linear-gradient(90deg,#f4fff7 0%, #fff 40%);padding:18px;border-radius:12px;margin-bottom:18px}
+        .hero img{width:140px;border-radius:10px}
+        .checkout-window{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+        .checkout-modal{width:720px;max-width:100%;background:#fff;border-radius:12px;padding:18px;box-shadow:0 30px 60px rgba(2,6,23,0.4)}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        input,select,textarea{padding:10px;border-radius:8px;border:1px solid #edf2f7;width:100%;font-size:14px}
+        .pay-methods{display:flex;gap:8px;flex-wrap:wrap}
+        .pm{border:1px solid #eef2f6;padding:8px 12px;border-radius:10px;cursor:pointer}
+        .pm.active{border-color:var(--accent);box-shadow:0 6px 20px rgba(16,126,70,0.08)}
+        .small{font-size:13px;color:var(--muted)}
+        @media (max-width:920px){
+            main{grid-template-columns:1fr}
+            aside.cart{order:2}
+        }
+    </style>
+</head>
+<body>
+    <!-- Demo single-file e-shop. To accept real payments integrate a backend (Stripe/PayPal) and replace the demo flow. -->
+    <header>
+        <div class="brand">
+            <div class="logo">GL</div>
+            <div>
+                <h1>Greenleaf Trees</h1>
+                <div class="small">Premium trees for carbon-smart gardens & spaces</div>
+            </div>
+        </div>
+        <nav>
+            <button class="icon" id="openCart">Cart (<span id="cartCount">0</span>)</button>
+            <button class="icon" onclick="document.getElementById('top').scrollIntoView()">Explore</button>
+            <a class="icon" href="contact.html" style="text-decoration:none;color:inherit;display:inline-flex;align-items:center;">Contact</a>
+        </nav>
+    </header>
+
+    <main id="top">
+        <section>
+            <div class="hero card">
+                <div style="flex:1">
+                    <h2 style="margin:0 0 6px 0">Bring life to your space — trees for every garden</h2>
+                    <p class="muted" style="margin:0 0 12px">Native species, sustainable packaging, doorstep delivery. Plant a tree, grow a future.</p>
+                    <div style="display:flex;gap:8px">
+                        <button class="btn" onclick="document.getElementById('catalog').scrollIntoView()">Shop Trees</button>
+                        <button class="btn secondary" onclick="openCheckoutDemo()">Quick Order (Demo)</button>
+                    </div>
+                </div>
+                <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=860b6c8aa0f6b7a8b4f8f5c2df2c1e4f" alt="tree">
+            </div>
+
+            <div style="margin:16px 0;display:flex;justify-content:space-between;align-items:center">
+                <h3 style="margin:0">Our selection</h3>
+                <div class="small">Free local delivery for orders over $120</div>
+            </div>
+
+            <div id="catalog" class="catalog" aria-live="polite"></div>
+        </section>
+
+        <aside class="cart" aria-live="polite">
+            <h2>Your cart</h2>
+            <div class="cart-list" id="cartList"></div>
+            <div class="summary">
+                <div class="row"><div class="small">Subtotal</div><div id="subtotal">$0.00</div></div>
+                <div class="row"><div class="small">Shipping</div><div id="shipping">$0.00</div></div>
+                <div class="row"><div class="small">Tax (8%)</div><div id="tax">$0.00</div></div>
+                <div class="row" style="font-weight:700;font-size:18px"><div>Total</div><div id="total">$0.00</div></div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                    <button class="btn" id="checkoutBtn">Checkout</button>
+                    <button class="btn secondary" id="clearCart">Clear</button>
+                </div>
+                <div style="margin-top:8px" class="small">Payment methods: Demo card, or integrate Stripe/PayPal (see comments)</div>
+            </div>
+        </aside>
+    </main>
+
+    <footer>
+        © Greenleaf Trees — Demo storefront. For production, connect a server-side payment integration (Stripe, PayPal). This demo simulates payments.
+    </footer>
+
+    <div class="checkout-window" id="checkoutWindow" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="checkout-modal" role="document">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <h3 style="margin:0">Checkout</h3>
+                <button onclick="closeCheckout()" class="icon">Close</button>
+            </div>
+
+            <form id="checkoutForm" onsubmit="return false;">
+                <div style="display:flex;gap:12px;align-items:center">
+                    <div style="flex:1">
+                        <label class="small">Full name</label>
+                        <input id="name" required placeholder="Jane Doe">
+                    </div>
+                    <div style="flex:1">
+                        <label class="small">Email</label>
+                        <input id="email" type="email" required placeholder="you@example.com">
+                    </div>
+                </div>
+
+                <div class="form-grid" style="margin-top:10px">
+                    <div>
+                        <label class="small">Address</label>
+                        <input id="address" required placeholder="123 Elm St">
+                    </div>
+                    <div>
+                        <label class="small">City</label>
+                        <input id="city" required placeholder="City">
+                    </div>
+                    <div>
+                        <label class="small">State / Region</label>
+                        <input id="state" required placeholder="State">
+                    </div>
+                    <div>
+                        <label class="small">Postal code</label>
+                        <input id="zip" required placeholder="ZIP">
+                    </div>
+                </div>
+
+                <div style="margin-top:12px">
+                    <label class="small">Payment method</label>
+                    <div class="pay-methods" id="payMethods">
+                        <div class="pm active" data-method="demo">Demo Card</div>
+                        <div class="pm" data-method="stripe">Stripe (requires server)</div>
+                    </div>
+                </div>
+
+                <div id="cardFields" style="margin-top:12px">
+                    <label class="small">Card number (demo)</label>
+                    <input id="card" placeholder="4242 4242 4242 4242">
+                    <div style="display:flex;gap:8px;margin-top:8px">
+                        <input id="c_exp" placeholder="MM/YY">
+                        <input id="c_cvc" placeholder="CVC">
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
+                    <button class="btn" id="payBtn">Pay (Demo)</button>
+                    <button class="btn secondary" id="stripeBtn" onclick="startStripe()">Pay with Stripe</button>
+                </div>
+                <div style="margin-top:8px" class="small">Demo payments always succeed. To process real payments, implement a backend that creates a payment session with a provider (Stripe/PayPal) and use secure secret keys there.</div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Single-file demo e-shop with cart and a simulated payment flow.
+        // Replace demo payment with real provider integration on server.
+        const products = [
+            {id: 'oak-1', name:'English Oak (2-3ft)', price:42, img:'https://images.unsplash.com/photo-1470770903676-69b98201ea1c?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=1617b3e4a8d1a5f6f0f6a1a7e9a1c3d9', note:'Great for large yards'},
+            {id: 'maple-1', name:'Sugar Maple (3ft)', price:53, img:'https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=6d6dfaf1d1a1b6a3e9d8b1cab3c2f5a0', note:'Stunning fall color'},
+            {id: 'pine-1', name:'White Pine (4ft)', price:36, img:'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=8f3a3a2d706a9344a1f6e2b5ec7d8c2b', note:'Evergreen, low maintenance'},
+            {id: 'birch-1', name:'Silver Birch (2ft)', price:48, img:'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=860b6c8aa0f6b7a8b4f8f5c2df2c1e4f', note:'Elegant white bark'},
+            {id: 'fruit-1', name:'Apple Tree (dwarf)', price:65, img:'https://images.unsplash.com/photo-1514996937319-344454492b37?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=7a3f9d5f8f9c1a7b8d3a6e9b2c0f5a4b', note:'Fruit-bearing, compact'},
+        ];
+
+        const cart = JSON.parse(localStorage.getItem('cart')||'{}');
+
+        function formatUSD(n){ return '$' + n.toFixed(2); }
+
+        function renderCatalog(){
+            const el = document.getElementById('catalog');
+            el.innerHTML = '';
+            products.forEach(p=>{
+                const card = document.createElement('article');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="thumb" style="background-image:url('${p.img}')"></div>
+                    <div>
+                        <div class="meta"><div><strong>${p.name}</strong><div class="desc">${p.note}</div></div><div class="price">${formatUSD(p.price)}</div></div>
+                        <div class="actions">
+                            <button class="btn" data-add="${p.id}">Add to cart</button>
+                            <button class="btn secondary" data-info="${p.id}">Details</button>
+                        </div>
+                    </div>
+                `;
+                el.appendChild(card);
+            });
+        }
+
+        function saveCart(){ localStorage.setItem('cart', JSON.stringify(cart)); updateCartUI(); }
+        function addToCart(id, qty=1){
+            cart[id] = (cart[id]||0) + qty;
+            saveCart();
+        }
+        function removeFromCart(id){ delete cart[id]; saveCart(); }
+        function setQty(id, qty){ if(qty<=0) removeFromCart(id); else { cart[id]=qty; saveCart(); } }
+
+        function updateCartUI(){
+            const list = document.getElementById('cartList');
+            list.innerHTML = '';
+            let subtotal = 0, count = 0;
+            Object.keys(cart).forEach(id=>{
+                const p = products.find(x=>x.id===id);
+                if(!p) return;
+                const qty = cart[id];
+                const li = document.createElement('div');
+                li.className = 'cart-item';
+                li.innerHTML = `
+                    <div class="ci-thumb" style="background-image:url('${p.img}')"></div>
+                    <div style="flex:1">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <div><strong>${p.name}</strong><div class="muted">${formatUSD(p.price)}</div></div>
+                            <div class="muted">${formatUSD(p.price*qty)}</div>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+                            <div class="qty">
+                                <button data-dec="${id}" class="icon">-</button>
+                                <div style="padding:6px 9px;border-radius:8px;border:1px solid #edf2f7">${qty}</div>
+                                <button data-inc="${id}" class="icon">+</button>
+                            </div>
+                            <button data-remove="${id}" class="icon">Remove</button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(li);
+                subtotal += p.price * qty;
+                count += qty;
+            });
+            document.getElementById('cartCount').textContent = count;
+            document.getElementById('subtotal').textContent = formatUSD(subtotal);
+            const shipping = subtotal > 120 || subtotal === 0 ? 0 : 12;
+            const tax = subtotal * 0.08;
+            const total = subtotal + shipping + tax;
+            document.getElementById('shipping').textContent = formatUSD(shipping);
+            document.getElementById('tax').textContent = formatUSD(tax);
+            document.getElementById('total').textContent = formatUSD(total);
+            document.getElementById('clearCart').disabled = Object.keys(cart).length===0;
+        }
+
+        document.addEventListener('click', (e)=>{
+            if(e.target.matches('[data-add]')) addToCart(e.target.dataset.add) ;
+            if(e.target.matches('[data-info]')) alert('Details:\n' + products.find(p=>p.id===e.target.dataset.info).name);
+            if(e.target.matches('[data-inc]')) setQty(e.target.dataset.inc, cart[e.target.dataset.inc]+1);
+            if(e.target.matches('[data-dec]')) setQty(e.target.dataset.dec, cart[e.target.dataset.dec]-1);
+            if(e.target.matches('[data-remove]')) removeFromCart(e.target.dataset.remove);
+        });
+
+        document.getElementById('openCart').addEventListener('click', ()=>{ document.querySelector('aside.cart').scrollIntoView({behavior:'smooth', block:'start'}); });
+        document.getElementById('clearCart').addEventListener('click', ()=>{ if(confirm('Clear cart?')) { Object.keys(cart).forEach(k=>delete cart[k]); saveCart(); } });
+
+        // Checkout modal
+        function openCheckoutDemo(){
+            if(Object.keys(cart).length===0){ alert('Cart is empty'); return; }
+            document.getElementById('checkoutWindow').style.display='flex';
+            document.getElementById('checkoutWindow').setAttribute('aria-hidden','false');
+        }
+        function closeCheckout(){
+            document.getElementById('checkoutWindow').style.display='none';
+            document.getElementById('checkoutWindow').setAttribute('aria-hidden','true');
+        }
+        document.getElementById('checkoutBtn').addEventListener('click', openCheckoutDemo);
+
+        // Payment method selection
+        document.getElementById('payMethods').addEventListener('click', (e)=>{
+            if(!e.target.dataset.method) return;
+            document.querySelectorAll('.pm').forEach(x=>x.classList.remove('active'));
+            e.target.classList.add('active');
+            if(e.target.dataset.method==='stripe'){
+                document.getElementById('cardFields').style.display='none';
+            } else {
+                document.getElementById('cardFields').style.display='block';
+            }
+        });
+
+        // Simulated payment
+        document.getElementById('payBtn').addEventListener('click', async ()=>{
+            // Basic validation
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            if(!name || !email){ alert('Please enter name and email'); return; }
+            // Show a short "processing" and succeed
+            document.getElementById('payBtn').textContent='Processing...'; document.getElementById('payBtn').disabled=true;
+            await new Promise(r=>setTimeout(r,1200));
+            document.getElementById('payBtn').textContent='Pay (Demo)'; document.getElementById('payBtn').disabled=false;
+            // Clear cart & show success
+            Object.keys(cart).forEach(k=>delete cart[k]); saveCart();
+            closeCheckout();
+            alert('Payment successful (demo). A confirmation was sent to ' + email + '.');
+        });
+
+        // Placeholder Stripe flow (requires server)
+        async function startStripe(){
+            // Calls local backend /create-checkout-session which uses your Stripe secret key to create a Checkout Session.
+            if(Object.keys(cart).length===0){ alert('Cart is empty'); return; }
+            document.getElementById('stripeBtn').textContent='Redirecting...';
+            document.getElementById('stripeBtn').disabled = true;
+
+            const items = Object.keys(cart).map(id=>{
+                const p = products.find(x=>x.id===id);
+                return { id: p.id, name: p.name, unit_price: p.price, quantity: cart[id] };
+            });
+
+            try {
+                const resp = await fetch('/create-checkout-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items,
+                        success_url: window.location.origin + '/?checkout=success',
+                        cancel_url: window.location.origin + '/?checkout=cancel'
+                    })
+                });
+                const data = await resp.json();
+                if (data.url) {
+                    window.location = data.url;
+                    return;
+                }
+                throw new Error(data.error || 'Invalid response from server');
+            } catch (err) {
+                console.error(err);
+                alert('Could not start Stripe Checkout: ' + (err.message||err));
+            } finally {
+                document.getElementById('stripeBtn').textContent='Pay with Stripe';
+                document.getElementById('stripeBtn').disabled = false;
+            }
+        }
+
+        // Initialize
+        renderCatalog();
+        updateCartUI();
+    </script>
+</body>
+</html>

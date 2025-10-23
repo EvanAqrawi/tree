@@ -1,0 +1,16 @@
+{
+  "name": "greenleaf-demo-store",
+  "version": "1.0.0",
+  "description": "Demo storefront with Stripe Checkout backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.18.2",
+    "stripe": "^11.0.0"
+  }
+}
